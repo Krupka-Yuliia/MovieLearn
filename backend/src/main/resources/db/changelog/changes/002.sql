@@ -1,0 +1,2 @@
+ALTER TABLE user
+    ADD COLUMN role ENUM('ADMIN', 'USER') DEFAULT 'USER' AFTER profile_pic;
