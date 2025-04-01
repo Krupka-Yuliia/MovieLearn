@@ -14,31 +14,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
 
-    public UserDto updateOrCreateUserFromOAuth2(OAuth2User oauth2User) {
+    public UserDto createUserFromOAuth2(OAuth2User oauth2User) {
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("given_name");
         String lastname = oauth2User.getAttribute("family_name");
         String profilePictureUrl = oauth2User.getAttribute("picture");
 
         User user = userRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setEmail(email);
-                    newUser.setName(name);
-                    newUser.setLastName(lastname);
-                    newUser.setRole(Role.USER);
-                    newUser.setEnglishLevel(null);
-
-                    if (profilePictureUrl != null) {
-                        byte[] pictureBytes = downloadProfilePicture(profilePictureUrl);
-                        newUser.setProfilePic(pictureBytes);
-                    }
-                    return newUser;
-                });
+                .orElseGet(() -> createUser(email, name, lastname, profilePictureUrl));
 
         return toUserDto(userRepository.save(user));
     }
-
 
     public void changeEnglishLevel(OAuth2User oauth2User, EnglishLevel level) {
         User user = getCurrentUserByEmail(oauth2User.getAttribute("email"));
@@ -46,8 +32,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserDto updateUser(@AuthenticationPrincipal OAuth2User principal, UserDto userDto) {
-        User user = getCurrentUserByEmail(principal.getAttribute("email"));
+    public UserDto updateUser(@AuthenticationPrincipal OAuth2User oauth2User, UserDto userDto) {
+        User user = getCurrentUserByEmail(oauth2User.getAttribute("email"));
 
         if (userDto.getName() != null && !userDto.getName().isEmpty()) {
             user.setName(userDto.getName());
@@ -76,5 +62,20 @@ public class UserService {
 
     private byte[] downloadProfilePicture(String profilePictureUrl) {
         return restTemplate.getForObject(profilePictureUrl, byte[].class);
+    }
+
+    private User createUser(String email, String name, String lastname, String profilePictureUrl) {
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setName(name);
+        newUser.setLastName(lastname);
+        newUser.setRole(Role.USER);
+        newUser.setEnglishLevel(null);
+
+        if (profilePictureUrl != null) {
+            byte[] pictureBytes = downloadProfilePicture(profilePictureUrl);
+            newUser.setProfilePic(pictureBytes);
+        }
+        return newUser;
     }
 }

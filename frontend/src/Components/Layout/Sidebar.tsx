@@ -14,18 +14,6 @@ const Sidebar: React.FC = () => {
         window.location.href = "http://localhost:8080/logout";
     };
 
-    const handleAccountClick = () => {
-        navigate("/account");
-    };
-
-    // const handleHomeClick = () => {
-    //     navigate("/home");
-    // };
-    //
-    // const handleMoviesListClick = () => {
-    //     navigate("/movies_list");
-    // };
-
     return (
         <Sider className="sidebar" width={200}>
             <div className="sidebar-content">
@@ -37,7 +25,8 @@ const Sidebar: React.FC = () => {
                     <Menu mode="vertical" defaultSelectedKeys={["3"]} className="sidebar-menu">
                         <Menu.Item key="1" icon={<HomeOutlined/>}>Home</Menu.Item>
                         <Menu.Item key="2" icon={<VideoCameraOutlined/>}>Movies List</Menu.Item>
-                        <Menu.Item key="3" icon={<UserOutlined/>} onClick={handleAccountClick}>Account</Menu.Item>
+                        <Menu.Item key="3" icon={<UserOutlined/>}
+                                   onClick={() => navigate("/account")}>Account</Menu.Item>
                     </Menu>
                 </div>
                 <Button

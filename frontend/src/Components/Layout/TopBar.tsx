@@ -23,9 +23,6 @@ const TopBar: React.FC = () => {
             .then((data: User) => setUser(data))
             .catch(error => console.error("Error fetching user data:", error))
     }, []);
-    const handleUsernameClick = () => {
-        navigate("/account");
-    };
 
     return (
         <Header className="topbar">
@@ -39,7 +36,7 @@ const TopBar: React.FC = () => {
                 <Text
                     strong
                     className="topbar-username"
-                    onClick={handleUsernameClick}
+                    onClick={() => navigate("/account")}
                 >
                     {user?.name} {user?.lastName}
                 </Text>

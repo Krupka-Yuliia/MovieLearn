@@ -21,7 +21,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
-        UserDto userDto = userService.updateOrCreateUserFromOAuth2(oauth2User);
+        UserDto userDto = userService.createUserFromOAuth2(oauth2User);
 
         if (userDto.getEnglishLevel() != null) {
             response.sendRedirect("http://localhost:5173/account");

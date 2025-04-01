@@ -25,10 +25,10 @@ public class UserRestController {
         return userService.updateUser(oauth2User, userDto);
     }
 
-//    @PostMapping
-//    public UserDto createUser(@AuthenticationPrincipal OAuth2User principal) {
-//        return userService.updateOrCreateUserFromOAuth2(principal);
-//    }
+    @PostMapping
+    public UserDto createUser(@AuthenticationPrincipal OAuth2User oauth2User) {
+        return userService.createUserFromOAuth2(oauth2User);
+    }
 
     @PutMapping("/level/{level}")
     public void updateEnglishLevel(
