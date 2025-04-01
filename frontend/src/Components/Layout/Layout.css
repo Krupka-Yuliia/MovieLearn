@@ -1,0 +1,80 @@
+.sidebar {
+    background-color: white;
+    min-height: 100vh;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding-bottom: 20px;
+}
+
+.sidebar-title {
+    padding: 16px;
+    margin: 0;
+    text-align: center;
+}
+
+.sidebar-title-movie {
+    color: #5A73DB;
+}
+
+.sidebar-title-learn {
+    color: #f5a742;
+}
+
+.sidebar-menu {
+    border-right: none;
+}
+
+.sidebar-logout {
+    background-color: #F5A623 !important;
+    border-color: #F5A623 !important;
+    color: white !important;
+    font-size: 14px !important;
+    margin: 0 auto;
+    border-radius: 20px;
+    width: 50%;
+}
+
+.sidebar-logout:hover {
+    background-color: #F5A623 !important;
+    opacity: 0.9;
+}
+
+.topbar {
+    background-color: white;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 64px;
+    padding: 0 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-avatar {
+    background-color: #f0f0f0;
+}
+
+.topbar-username {
+    color: #333;
+}
+
+.footer {
+    text-align: center;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    color: #666;
+}
