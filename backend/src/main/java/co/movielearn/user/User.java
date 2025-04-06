@@ -18,6 +18,8 @@ public class User {
     private String lastName;
     private String email;
     private String password;
+    @Lob
+    @Column(name = "profile_pic", columnDefinition = "LONGBLOB")
     private byte[] profilePic;
 
     @Enumerated(EnumType.STRING)

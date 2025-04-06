@@ -1,4 +1,4 @@
-import {Layout, Typography, Form, Input, Radio, Button, Avatar, message, Card, Space} from "antd";
+import {Layout, Form, Input, Radio, Button, Avatar, message, Card, Space, Upload} from "antd";
 import Sidebar from "../Layout/Sidebar";
 import TopBar from "../Layout/TopBar";
 import FooterBar from "../Layout/Footer";
@@ -6,36 +6,77 @@ import "./AccountPage.css";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import {EditOutlined, UploadOutlined} from '@ant-design/icons';
 
 const {Content} = Layout;
-const {Title} = Typography;
 
 const UpdateProfilePage = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
-    const [user, setUser] = useState<{ name?: string; lastName?: string; englishLevel?: string } | null>(null);
+    const [user, setUser] = useState(null);
+    const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
+    const [originalAvatar, setOriginalAvatar] = useState<string | null>(null);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+    const apiBaseUrl = `${window.location.protocol}//localhost:8080`;
 
     useEffect(() => {
         axios.get("/api/users/account")
-            .then(response => {
-                setUser(response.data);
-                form.setFieldsValue(response.data);
+            .then(({data}) => {
+                setUser(data);
+                form.setFieldsValue(data);
+                const avatarUrl = `${apiBaseUrl}/api/users/profile-picture?t=${new Date().getTime()}`;
+                setPreviewAvatar(avatarUrl);
+                setOriginalAvatar(avatarUrl);
             })
-            .catch(error => {
-                console.error("Error fetching user profile:", error);
-            });
-    }, [form]);
+            .catch(() => message.error("Error fetching user profile"));
+    }, [apiBaseUrl, form]);
 
     const handleSubmit = async (values: Record<string, unknown>) => {
         try {
             await axios.put("/api/users/account/update", values);
-            setUser(prevUser => ({...prevUser, ...values}));
+            if (avatarFile) {
+                const formData = new FormData();
+                formData.append("file", avatarFile);
+                await axios.post("/api/users/profile-picture/upload", formData, {
+                    headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
+                });
+            }
             message.success("Profile updated successfully");
-        } catch (error) {
-            console.error("Error updating profile:", error);
+            navigate("/account");
+        } catch {
             message.error("Failed to update profile");
         }
     };
+
+    const handleCancel = () => {
+        form.resetFields();
+        if (user) form.setFieldsValue(user);
+        setPreviewAvatar(originalAvatar);
+        setAvatarFile(null);
+        navigate("/account");
+    };
+
+    const uploadProps = {
+        beforeUpload: (file: File) => {
+            const isImage = file.type.startsWith("image/");
+            const isLt5M = file.size / 1024 / 1024 < 5;
+            if (!isImage) {
+                message.error("You can only upload image files!");
+                return false;
+            }
+            if (!isLt5M) {
+                message.error("Image must be smaller than 5MB!");
+                return false;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => setPreviewAvatar(e.target?.result as string);
+            reader.readAsDataURL(file);
+            setAvatarFile(file);
+            return false;
+        },
+    };
+
 
     return (
         <Layout style={{minHeight: "100vh"}}>
@@ -45,40 +86,42 @@ const UpdateProfilePage = () => {
                 <Content style={{margin: "20px", display: "flex", justifyContent: "center"}}>
                     <div className="profile-container">
                         <div className="profile-header">
-                            <Avatar
-                                src={user ? "/api/users/profile-picture" : undefined}
-                                size={80}
-                            />
-                            <Title level={4}>{user?.name} {user?.lastName}</Title>
+                            <Avatar src={previewAvatar || undefined} size={80}/>
+                            <Upload {...uploadProps}>
+                                <Button
+                                    icon={<UploadOutlined/>}
+                                    className="yellow-btn-outline"
+                                    style={{marginTop: "20px"}}
+                                >
+                                    Change Avatar
+                                </Button>
+                            </Upload>
                         </div>
                         <div className="profile-card">
                             <Card className="profile-card">
-                                <Space direction="vertical" size="large" style={{width: '100%'}}>
-                                    <Form form={form} layout="vertical" onFinish={handleSubmit}
-                                          className="profile-detail">
-                                        <Form.Item label={<span className="profile-label">Name</span>} name="name">
-                                            <Input placeholder="example"/>
-                                        </Form.Item>
-                                        <Form.Item label={<span className="profile-label">Last Name</span>}
-                                                   name="lastName">
-                                            <Input placeholder="example"/>
-                                        </Form.Item>
-                                        <Form.Item label={<span className="profile-label">English level</span>}
-                                                   name="englishLevel">
-                                            <Radio.Group>
-                                                <Radio value="A1">A1</Radio>
-                                                <Radio value="A2">A2</Radio>
-                                                <Radio value="B1">B1</Radio>
-                                                <Radio value="B2">B2</Radio>
-                                                <Radio value="C1">C1</Radio>
-                                            </Radio.Group>
-                                        </Form.Item>
-                                        <Form.Item className="submit-container">
-                                            <Button htmlType="submit" className="update-profile-btn"
-                                                    onClick={() => navigate("/account")}>Update</Button>
-                                        </Form.Item>
-                                    </Form>
-                                </Space>
+                                <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                                    <Form.Item label="Name" name="name">
+                                        <Input placeholder="Enter your name"/>
+                                    </Form.Item>
+                                    <Form.Item label="Last Name" name="lastName">
+                                        <Input placeholder="Enter your last name"/>
+                                    </Form.Item>
+                                    <Form.Item label="English Level" name="englishLevel">
+                                        <Radio.Group>
+                                            {["A1", "A2", "B1", "B2", "C1"].map(level => (
+                                                <Radio key={level} value={level}>{level}</Radio>
+                                            ))}
+                                        </Radio.Group>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <Space style={{display: "flex", justifyContent: "center"}}>
+                                            <Button icon={<EditOutlined/>} htmlType="submit" className="yellow-btn">
+                                                Update
+                                            </Button>
+                                            <Button onClick={handleCancel} className="blue-btn">Cancel</Button>
+                                        </Space>
+                                    </Form.Item>
+                                </Form>
                             </Card>
                         </div>
                     </div>

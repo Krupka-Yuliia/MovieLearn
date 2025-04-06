@@ -1,10 +1,20 @@
 package co.movielearn.user;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static co.movielearn.user.UserMapper.toUserDto;
 
@@ -78,4 +88,33 @@ public class UserService {
         }
         return newUser;
     }
+
+    public void saveAvatar(MultipartFile file, OAuth2User oauth2User) throws IOException {
+        String email = oauth2User.getAttribute("email");
+
+        if (email == null) {
+            throw new IllegalArgumentException("Email not found in OAuth2User attributes");
+        }
+
+        // Перевірка типу файлу
+        String fileType = file.getContentType();
+        if (fileType == null || !fileType.startsWith("image/")) {
+            throw new IllegalArgumentException("Uploaded file must be an image");
+        }
+
+        // Перевірка розміру файлу (не більше 5MB)
+        long maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.getSize() > maxSize) {
+            throw new IllegalArgumentException("File size exceeds the limit of 5MB");
+        }
+
+        // Читання байтів файлу
+        byte[] avatarBytes = file.getBytes();
+
+        // Оновлення аватара в базі даних
+        User user = getCurrentUserByEmail(email);
+        user.setProfilePic(avatarBytes);
+        userRepository.save(user);
+    }
+
 }

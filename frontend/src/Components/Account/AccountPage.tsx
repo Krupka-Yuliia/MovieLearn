@@ -7,10 +7,8 @@ import "./AccountPage.css";
 import {useNavigate} from "react-router-dom";
 import {EditOutlined} from "@ant-design/icons";
 
-
 const {Content} = Layout;
 const {Title, Text} = Typography;
-
 
 interface User {
     name?: string;
@@ -24,66 +22,69 @@ interface User {
 
 const AccountPage = () => {
     const [user, setUser] = useState<User | null>(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
         fetch("/api/users/account", {credentials: "include"})
-            .then(response => response.json())
+            .then((res) => res.json())
             .then((data: User) => setUser(data))
-            .catch(error => console.error("Error fetching user data:", error))
+            .catch((error) => console.error("Error fetching user data:", error));
     }, []);
+
+    if (user?.error) {
+        return (
+            <Layout style={{minHeight: "100vh"}}>
+                <Sidebar />
+                <Layout>
+                    <TopBar />
+                    <Content style={{margin: "20px", textAlign: "center"}}>
+                        <Title>User not authenticated</Title>
+                    </Content>
+                    <FooterBar />
+                </Layout>
+            </Layout>
+        );
+    }
 
     return (
         <Layout style={{minHeight: "100vh"}}>
-            <Sidebar/>
+            <Sidebar />
             <Layout>
-                <TopBar/>
+                <TopBar />
                 <Content style={{margin: "20px", display: "flex", justifyContent: "center"}}>
-                    {user?.error ? (
-                        <Title>User not authenticated</Title>
-                    ) : (
-                        <div className="profile-container">
-                            <div className="profile-header">
-                                <Avatar
-                                    src={user ? "/api/users/profile-picture" : undefined}
-                                    size={80}
-                                />
-                                <Title level={4}>{user?.name} {user?.lastName}</Title>
-                            </div>
-
-                            <Card className="profile-card">
-                                <Space direction="vertical" size="large" style={{width: '100%'}}>
-                                    <div className="profile-detail">
-                                        <Text className="profile-label">Email:</Text>
-                                        <Text>{user?.email}</Text>
-                                    </div>
-
-                                    <div className="profile-detail">
-                                        <Text className="profile-label">English level:</Text>
-                                        <Text>{user?.englishLevel || "Not set"}</Text>
-                                    </div>
-
-                                    <div className="profile-detail">
-                                        <Text className="profile-label">Movies started:</Text>
-                                        <Text>{user?.moviesStarted || 0}</Text>
-                                    </div>
-
-                                    <Button
-                                        className="update-profile-btn"
-                                        onClick={() => navigate("/account/update")}
-                                        icon={<EditOutlined/>}
-                                    >
-                                        Update Profile
-                                    </Button>
-                                </Space>
-                            </Card>
+                    <div className="profile-container">
+                        <div className="profile-header">
+                            <Avatar src="/api/users/profile-picture" size={80} />
+                            <Title level={4}>{`${user?.name || ""} ${user?.lastName || ""}`}</Title>
                         </div>
-                    )}
+                        <Card className="profile-card">
+                            <Space direction="vertical" size="large" style={{width: "100%"}}>
+                                <ProfileDetail label="Email:" value={user?.email || "Not available"} />
+                                <ProfileDetail label="English level:" value={user?.englishLevel || "Not set"} />
+                                <ProfileDetail label="Movies started:" value={user?.moviesStarted || 0} />
+                                <Button
+                                    className="update-profile-btn"
+                                    icon={<EditOutlined />}
+                                    onClick={() => navigate("/account/update")}
+                                >
+                                    Update Profile
+                                </Button>
+                            </Space>
+                        </Card>
+                    </div>
                 </Content>
-                <FooterBar/>
+                <FooterBar />
             </Layout>
         </Layout>
     );
 };
+
+const ProfileDetail = ({label, value}: {label: string; value: string | number}) => (
+    <div className="profile-detail">
+        <Text className="profile-label">{label}</Text>
+        <Text>{value}</Text>
+    </div>
+);
 
 export default AccountPage;
