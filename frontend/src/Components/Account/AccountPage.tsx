@@ -6,6 +6,7 @@ import FooterBar from "../Layout/Footer";
 import "./AccountPage.css";
 import {useNavigate} from "react-router-dom";
 import {EditOutlined} from "@ant-design/icons";
+import {message as antMessage} from "antd";
 
 const {Content} = Layout;
 const {Title, Text} = Typography;
@@ -20,12 +21,18 @@ interface User {
     error?: string;
 }
 
+
 const AccountPage = () => {
     const [user, setUser] = useState<User | null>(null);
-
+    const [customMessage, contextHolder] = antMessage.useMessage();
     const navigate = useNavigate();
 
     useEffect(() => {
+        const successMessage = localStorage.getItem("updateSuccess");
+        if (successMessage) {
+            customMessage.success(successMessage);
+            localStorage.removeItem("updateSuccess");
+        }
         fetch("/api/users/account", {credentials: "include"})
             .then((res) => res.json())
             .then((data: User) => setUser(data))
@@ -35,13 +42,13 @@ const AccountPage = () => {
     if (user?.error) {
         return (
             <Layout style={{minHeight: "100vh"}}>
-                <Sidebar />
+                <Sidebar/>
                 <Layout>
-                    <TopBar />
+                    <TopBar/>
                     <Content style={{margin: "20px", textAlign: "center"}}>
                         <Title>User not authenticated</Title>
                     </Content>
-                    <FooterBar />
+                    <FooterBar/>
                 </Layout>
             </Layout>
         );
@@ -49,23 +56,24 @@ const AccountPage = () => {
 
     return (
         <Layout style={{minHeight: "100vh"}}>
-            <Sidebar />
+            {contextHolder}
+            <Sidebar/>
             <Layout>
-                <TopBar />
+                <TopBar/>
                 <Content style={{margin: "20px", display: "flex", justifyContent: "center"}}>
                     <div className="profile-container">
                         <div className="profile-header">
-                            <Avatar src="/api/users/profile-picture" size={80} />
+                            <Avatar src="/api/users/profile-picture" size={80}/>
                             <Title level={4}>{`${user?.name || ""} ${user?.lastName || ""}`}</Title>
                         </div>
                         <Card className="profile-card">
                             <Space direction="vertical" size="large" style={{width: "100%"}}>
-                                <ProfileDetail label="Email:" value={user?.email || "Not available"} />
-                                <ProfileDetail label="English level:" value={user?.englishLevel || "Not set"} />
-                                <ProfileDetail label="Movies started:" value={user?.moviesStarted || 0} />
+                                <ProfileDetail label="Email:" value={user?.email || "Not available"}/>
+                                <ProfileDetail label="English level:" value={user?.englishLevel || "Not set"}/>
+                                <ProfileDetail label="Movies started:" value={user?.moviesStarted || 0}/>
                                 <Button
                                     className="update-profile-btn"
-                                    icon={<EditOutlined />}
+                                    icon={<EditOutlined/>}
                                     onClick={() => navigate("/account/update")}
                                 >
                                     Update Profile
@@ -74,13 +82,13 @@ const AccountPage = () => {
                         </Card>
                     </div>
                 </Content>
-                <FooterBar />
+                <FooterBar/>
             </Layout>
         </Layout>
     );
 };
 
-const ProfileDetail = ({label, value}: {label: string; value: string | number}) => (
+const ProfileDetail = ({label, value}: { label: string; value: string | number }) => (
     <div className="profile-detail">
         <Text className="profile-label">{label}</Text>
         <Text>{value}</Text>

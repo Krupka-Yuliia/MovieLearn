@@ -1,4 +1,4 @@
-import {Layout, Form, Input, Radio, Button, Avatar, message, Card, Space, Upload} from "antd";
+import {Layout, Form, Input, Radio, Button, Avatar, message as antMessage, Card, Space, Upload} from "antd";
 import Sidebar from "../Layout/Sidebar";
 import TopBar from "../Layout/TopBar";
 import FooterBar from "../Layout/Footer";
@@ -6,7 +6,7 @@ import "./AccountPage.css";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {EditOutlined, UploadOutlined} from '@ant-design/icons';
+import {EditOutlined, UploadOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;
 
@@ -17,11 +17,13 @@ const UpdateProfilePage = () => {
     const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
     const [originalAvatar, setOriginalAvatar] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [customMessage, contextHolder] = antMessage.useMessage();
 
     const apiBaseUrl = `${window.location.protocol}//localhost:8080`;
 
     useEffect(() => {
-        axios.get("/api/users/account")
+        axios
+            .get("/api/users/account")
             .then(({data}) => {
                 setUser(data);
                 form.setFieldsValue(data);
@@ -29,7 +31,7 @@ const UpdateProfilePage = () => {
                 setPreviewAvatar(avatarUrl);
                 setOriginalAvatar(avatarUrl);
             })
-            .catch(() => message.error("Error fetching user profile"));
+            .catch(() => customMessage.error("Error fetching user profile"));
     }, [apiBaseUrl, form]);
 
     const handleSubmit = async (values: Record<string, unknown>) => {
@@ -42,12 +44,18 @@ const UpdateProfilePage = () => {
                     headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
                 });
             }
-            message.success("Profile updated successfully");
+            localStorage.setItem("updateSuccess", "Profile updated successfully");
             navigate("/account");
-        } catch {
-            message.error("Failed to update profile");
+        } catch (err) {
+            const errorMessage =
+                axios.isAxiosError(err) && err.response?.data?.message
+                    ? err.response.data.message
+                    : "An error occurred while updating your profile. Please try again.";
+            customMessage.error(errorMessage);
         }
     };
+
+
 
     const handleCancel = () => {
         form.resetFields();
@@ -62,12 +70,12 @@ const UpdateProfilePage = () => {
             const isImage = file.type.startsWith("image/");
             const isLt5M = file.size / 1024 / 1024 < 5;
             if (!isImage) {
-                message.error("You can only upload image files!");
-                return false;
+                customMessage.error("You can only upload image files!");
+                return Upload.LIST_IGNORE;
             }
             if (!isLt5M) {
-                message.error("Image must be smaller than 5MB!");
-                return false;
+                customMessage.error("Image must be smaller than 5MB!");
+                return Upload.LIST_IGNORE;
             }
             const reader = new FileReader();
             reader.onload = (e) => setPreviewAvatar(e.target?.result as string);
@@ -77,9 +85,9 @@ const UpdateProfilePage = () => {
         },
     };
 
-
     return (
         <Layout style={{minHeight: "100vh"}}>
+            {contextHolder}
             <Sidebar/>
             <Layout>
                 <TopBar/>
@@ -88,11 +96,8 @@ const UpdateProfilePage = () => {
                         <div className="profile-header">
                             <Avatar src={previewAvatar || undefined} size={80}/>
                             <Upload {...uploadProps}>
-                                <Button
-                                    icon={<UploadOutlined/>}
-                                    className="yellow-btn-outline"
-                                    style={{marginTop: "20px"}}
-                                >
+                                <Button icon={<UploadOutlined/>} className="yellow-btn-outline"
+                                        style={{marginTop: "20px"}}>
                                     Change Avatar
                                 </Button>
                             </Upload>
@@ -108,8 +113,10 @@ const UpdateProfilePage = () => {
                                     </Form.Item>
                                     <Form.Item label="English Level" name="englishLevel">
                                         <Radio.Group>
-                                            {["A1", "A2", "B1", "B2", "C1"].map(level => (
-                                                <Radio key={level} value={level}>{level}</Radio>
+                                            {["A1", "A2", "B1", "B2", "C1"].map((level) => (
+                                                <Radio key={level} value={level}>
+                                                    {level}
+                                                </Radio>
                                             ))}
                                         </Radio.Group>
                                     </Form.Item>
@@ -118,7 +125,9 @@ const UpdateProfilePage = () => {
                                             <Button icon={<EditOutlined/>} htmlType="submit" className="yellow-btn">
                                                 Update
                                             </Button>
-                                            <Button onClick={handleCancel} className="blue-btn">Cancel</Button>
+                                            <Button onClick={handleCancel} className="blue-btn">
+                                                Cancel
+                                            </Button>
                                         </Space>
                                     </Form.Item>
                                 </Form>
