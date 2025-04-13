@@ -1,4 +1,4 @@
-import {Layout, Form, Input, Radio, Button, Avatar, message as antMessage, Card, Space, Upload} from "antd";
+import {Layout, Form, Input, Radio, Button, Avatar, message as antMessage, Card, Space, Upload, Checkbox} from "antd";
 import Sidebar from "../Layout/Sidebar";
 import TopBar from "../Layout/TopBar";
 import FooterBar from "../Layout/Footer";
@@ -9,6 +9,19 @@ import {useNavigate} from "react-router-dom";
 import {EditOutlined, UploadOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;
+
+const interestsList = [
+    "Sport",
+    "Fashion",
+    "Food",
+    "Space",
+    "Art",
+    "Traveling",
+    "Literature",
+    "Humor",
+    "Music",
+    "Science"
+];
 
 const UpdateProfilePage = () => {
     const [form] = Form.useForm();
@@ -34,16 +47,29 @@ const UpdateProfilePage = () => {
             .catch(() => customMessage.error("Error fetching user profile"));
     }, [apiBaseUrl, form]);
 
-    const handleSubmit = async (values: Record<string, unknown>) => {
+    interface UserFormValues {
+        name?: string;
+        lastName?: string;
+        englishLevel?: string;
+        interests?: string[];
+    }
+
+    const handleSubmit = async (values: UserFormValues) => {
         try {
-            await axios.put("/api/users/account/update", values);
+            const updatedInterests = values.interests?.map(name => ({name})) || [];
+
+            const updatedValues = {...values, interests: updatedInterests};
+
+            await axios.put("/api/users/account/update", updatedValues);
+
             if (avatarFile) {
                 const formData = new FormData();
                 formData.append("file", avatarFile);
-                await axios.post("/api/users/profile-picture/upload", formData, {
+                await axios.put("/api/users/profile-picture/upload", formData, {
                     headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
                 });
             }
+
             localStorage.setItem("updateSuccess", "Profile updated successfully");
             navigate("/account");
         } catch (err) {
@@ -55,6 +81,22 @@ const UpdateProfilePage = () => {
         }
     };
 
+    useEffect(() => {
+        axios
+            .get("/api/users/account")
+            .then(({data}) => {
+                setUser(data);
+
+                const interests = data.interests?.map((i: { name: string }) => i.name) || [];
+
+                form.setFieldsValue({...data, interests});
+
+                const avatarUrl = `${apiBaseUrl}/api/users/profile-picture?t=${new Date().getTime()}`;
+                setPreviewAvatar(avatarUrl);
+                setOriginalAvatar(avatarUrl);
+            })
+            .catch(() => customMessage.error("Error fetching user profile"));
+    }, [apiBaseUrl, form]);
 
 
     const handleCancel = () => {
@@ -119,6 +161,9 @@ const UpdateProfilePage = () => {
                                                 </Radio>
                                             ))}
                                         </Radio.Group>
+                                    </Form.Item>
+                                    <Form.Item label="Interests" name="interests">
+                                        <Checkbox.Group options={interestsList}/>
                                     </Form.Item>
                                     <Form.Item>
                                         <Space style={{display: "flex", justifyContent: "center"}}>

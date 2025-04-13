@@ -7,6 +7,6 @@ CREATE TABLE user
     last_name VARCHAR(255) NOT NULL,
     english_level ENUM('A1', 'A2', 'B1', 'B2', 'C1', 'C2') DEFAULT 'A1',
     role ENUM('ADMIN', 'USER') NOT NULL,
-    profile_pic BLOB
+    profile_pic LONGBLOB
 );
 

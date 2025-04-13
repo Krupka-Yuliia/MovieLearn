@@ -23,7 +23,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         UserDto userDto = userService.createUserFromOAuth2(oauth2User);
 
-        if (userDto.getEnglishLevel() != null) {
+        if (userDto.getEnglishLevel() != null ) {
             response.sendRedirect("http://localhost:5173/account");
         } else {
             response.sendRedirect("http://localhost:5173/level");

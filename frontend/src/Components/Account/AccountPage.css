@@ -34,8 +34,8 @@
     margin: 0 auto;
     display: block;
     border-radius: 20px;
-    border-color: #F5A623 !important;
-    color: #F5A623 !important;
+    border-color: #F49E4C !important;
+    color: #F49E4C !important;
     font-size: 14px !important;
 }
 
@@ -50,16 +50,16 @@
 
 .yellow-btn {
     border-radius: 20px;
-    background-color: #F5A623;
-    border-color: #F5A623 !important;
+    background-color: #F49E4C;
+    border-color: #F49E4C !important;
     font-size: 14px !important;
     color: white;
 }
 
 .yellow-btn-outline {
     border-radius: 20px;
-    color: #F5A623;
-    border-color: #F5A623 !important;
+    color: #F49E4C;
+    border-color: #F49E4C !important;
     font-size: 14px !important;
 }
 
@@ -71,18 +71,41 @@
 
 .yellow-btn:hover {
     background-color: white !important;
-    color: #F5A623 !important;
+    color: #F49E4C !important;
     opacity: 0.9;
 }
 
 .yellow-btn-outline:hover {
-    background-color: #F5A623 !important;
+    background-color: #F49E4C !important;
     color: white !important;
     opacity: 0.9;
 }
 
 .update-profile-btn:hover {
-    background-color: #F5A623 !important;
+    background-color: #F49E4C !important;
     color: white !important;
     opacity: 0.9;
+}
+
+.interests-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.interest-badge {
+    background-color: #F49E4C;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: default;
+    transition: background-color 0.8s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.interest-badge:hover {
+    background-color: darkorange;
 }

@@ -14,7 +14,8 @@ public class UserMapper {
                 user.getLastName(),
                 user.getEnglishLevel(),
                 user.getProfilePic(),
-                user.getRole()
+                user.getRole(),
+                user.getInterests()
         );
     }
 }

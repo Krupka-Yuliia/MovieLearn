@@ -10,9 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class UserRestController {
 
@@ -49,11 +52,27 @@ public class UserRestController {
                 .body(userDto.getProfilePic());
     }
 
-    @PostMapping("/profile-picture/upload")
+    @PutMapping("/profile-picture/upload")
     public ResponseEntity<String> uploadProfilePicture(
             @AuthenticationPrincipal OAuth2User oauth2User,
             @RequestPart("file") MultipartFile file) throws IOException {
         userService.saveAvatar(file, oauth2User);
         return ResponseEntity.ok("Profile picture uploaded successfully");
     }
+
+
+    @PutMapping("/interests")
+    public ResponseEntity<String> saveInterests(@AuthenticationPrincipal OAuth2User oauth2User,
+                                                @RequestBody List<String> interestNames) {
+        try {
+            userService.saveOrUpdateInterests(oauth2User, interestNames);
+            return ResponseEntity.ok("Interests saved successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to save interests: " + e.getMessage());
+        }
+    }
+
+
+
 }

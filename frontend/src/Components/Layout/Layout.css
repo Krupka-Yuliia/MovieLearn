@@ -23,7 +23,7 @@
 }
 
 .sidebar-title-learn {
-    color: #f5a742;
+    color: #F49E4C;
 }
 
 .sidebar-menu {
@@ -31,8 +31,8 @@
 }
 
 .sidebar-logout {
-    background-color: #F5A623 !important;
-    border-color: #F5A623 !important;
+    background-color: #F49E4C !important;
+    border-color: #F49E4C !important;
     color: white !important;
     font-size: 14px !important;
     margin: 0 auto;
@@ -41,7 +41,7 @@
 }
 
 .sidebar-logout:hover {
-    background-color: #F5A623 !important;
+    background-color: #F49E4C !important;
     opacity: 0.9;
 }
 

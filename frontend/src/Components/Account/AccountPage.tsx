@@ -11,6 +11,10 @@ import {message as antMessage} from "antd";
 const {Content} = Layout;
 const {Title, Text} = Typography;
 
+interface Interest {
+    name: string;
+}
+
 interface User {
     name?: string;
     lastName?: string;
@@ -18,6 +22,7 @@ interface User {
     picture?: string;
     englishLevel?: string;
     moviesStarted?: number;
+    interests?: Interest[];
     error?: string;
 }
 
@@ -40,19 +45,10 @@ const AccountPage = () => {
     }, []);
 
     if (user?.error) {
-        return (
-            <Layout style={{minHeight: "100vh"}}>
-                <Sidebar/>
-                <Layout>
-                    <TopBar/>
-                    <Content style={{margin: "20px", textAlign: "center"}}>
-                        <Title>User not authenticated</Title>
-                    </Content>
-                    <FooterBar/>
-                </Layout>
-            </Layout>
-        );
+        navigate("/");
+        return null;
     }
+
 
     return (
         <Layout style={{minHeight: "100vh"}}>
@@ -71,6 +67,23 @@ const AccountPage = () => {
                                 <ProfileDetail label="Email:" value={user?.email || "Not available"}/>
                                 <ProfileDetail label="English level:" value={user?.englishLevel || "Not set"}/>
                                 <ProfileDetail label="Movies started:" value={user?.moviesStarted || 0}/>
+
+                                <div className="profile-detail">
+                                    <Text className="profile-label">Interests:</Text>
+                                    <div className="interests-badges">
+                                        {user?.interests && user.interests.length > 0 ? (
+                                            user.interests.map((interest, index) => (
+                                                <span key={index} className="interest-badge">
+                    {interest.name}
+                </span>
+                                            ))
+                                        ) : (
+                                            <Text>Not set</Text>
+                                        )}
+                                    </div>
+                                </div>
+
+
                                 <Button
                                     className="update-profile-btn"
                                     icon={<EditOutlined/>}

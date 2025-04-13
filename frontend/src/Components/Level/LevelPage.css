@@ -21,7 +21,7 @@
 }
 
 .logo-orange {
-    color: #F5A623;
+    color: #F49E4C;
 }
 
 .subtitle {
@@ -38,8 +38,8 @@
 }
 
 .level-button {
-    background-color: #F5A623 !important;
-    border-color: #F5A623 !important;
+    background-color: #F49E4C !important;
+    border-color: #F49E4C !important;
     color: white !important;
     font-size: 14px !important;
     padding: 8px 24px;
@@ -48,7 +48,7 @@
 }
 
 .level-button:hover {
-    background-color: #F5A623 !important;
+    background-color: #F49E4C !important;
     opacity: 0.9;
 }
 

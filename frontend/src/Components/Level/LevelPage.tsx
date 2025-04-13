@@ -20,7 +20,7 @@ const LevelPage: React.FC = () => {
             });
 
             message.success(`English level set to ${level}`);
-            navigate('/account');
+            navigate('/interests');
         } catch (error) {
             console.error('Failed to update English level', error);
             message.error('Failed to update English level. Please try again.');
