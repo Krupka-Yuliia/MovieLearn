@@ -9,7 +9,12 @@
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+}
+
+.sidebar-container {
     padding-bottom: 20px;
+    position: sticky;
+    top: 20px;
 }
 
 .sidebar-title {
@@ -35,10 +40,14 @@
     border-color: #F49E4C !important;
     color: white !important;
     font-size: 14px !important;
-    margin: 0 auto;
     border-radius: 20px;
     width: 50%;
+    position: sticky;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
 }
+
 
 .sidebar-logout:hover {
     background-color: #F49E4C !important;

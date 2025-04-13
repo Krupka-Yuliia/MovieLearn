@@ -1,11 +1,13 @@
 import { Button, Typography } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
 import "./LoginPage.css";
+import { useAuth } from "../Auth/AuthContext";
 
 const LoginPage = () => {
+    const { login } = useAuth();
 
     const handleGoogleLogin = () => {
-        window.location.href = "http://localhost:8080/oauth2/authorization/google";
+        login();
     };
 
     return (

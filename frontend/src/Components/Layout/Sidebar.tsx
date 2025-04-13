@@ -17,14 +17,15 @@ const Sidebar: React.FC = () => {
     return (
         <Sider className="sidebar" width={200}>
             <div className="sidebar-content">
-                <div>
+                <div className="sidebar-container">
                     <Title level={4} className="sidebar-title">
                         <span className="sidebar-title-movie">Movie</span>
                         <span className="sidebar-title-learn">Learn</span>
                     </Title>
                     <Menu mode="vertical" defaultSelectedKeys={["3"]} className="sidebar-menu">
                         <Menu.Item key="1" icon={<HomeOutlined/>}>Home</Menu.Item>
-                        <Menu.Item key="2" icon={<VideoCameraOutlined/>}>Movies List</Menu.Item>
+                        <Menu.Item key="2" icon={<VideoCameraOutlined/>}
+                                   onClick={() => navigate("/movies")}>Movies List</Menu.Item>
                         <Menu.Item key="3" icon={<UserOutlined/>}
                                    onClick={() => navigate("/account")}>Account</Menu.Item>
                     </Menu>
