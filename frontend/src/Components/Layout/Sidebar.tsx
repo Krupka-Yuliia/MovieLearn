@@ -9,6 +9,26 @@ const {Title} = Typography;
 
 const Sidebar: React.FC = () => {
     const navigate = useNavigate();
+    const items = [
+        {
+            key: '1',
+            icon: <HomeOutlined/>,
+            label: 'Home',
+        },
+        {
+            key: '2',
+            icon: <VideoCameraOutlined/>,
+            label: 'Movies List',
+            onClick: () => navigate('/movies'),
+        },
+        {
+            key: '3',
+            icon: <UserOutlined/>,
+            label: 'Account',
+            onClick: () => navigate('/account'),
+        },
+    ];
+
 
     const handleLogout = () => {
         window.location.href = "http://localhost:8080/logout";
@@ -22,13 +42,12 @@ const Sidebar: React.FC = () => {
                         <span className="sidebar-title-movie">Movie</span>
                         <span className="sidebar-title-learn">Learn</span>
                     </Title>
-                    <Menu mode="vertical" defaultSelectedKeys={["3"]} className="sidebar-menu">
-                        <Menu.Item key="1" icon={<HomeOutlined/>}>Home</Menu.Item>
-                        <Menu.Item key="2" icon={<VideoCameraOutlined/>}
-                                   onClick={() => navigate("/movies")}>Movies List</Menu.Item>
-                        <Menu.Item key="3" icon={<UserOutlined/>}
-                                   onClick={() => navigate("/account")}>Account</Menu.Item>
-                    </Menu>
+                    <Menu
+                        mode="vertical"
+                        defaultSelectedKeys={['3']}
+                        className="sidebar-menu"
+                        items={items}
+                    />
                 </div>
                 <Button
                     type="primary"

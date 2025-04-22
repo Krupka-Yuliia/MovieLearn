@@ -1,5 +1,6 @@
 package co.movielearn.user;
 
+import co.movielearn.movie.Movie;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,4 +39,13 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "interest_id")
     )
     private List<Interest> interests = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_movie",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "movie_id")
+    )
+    private List<Movie> movies = new ArrayList<>();
+
 }

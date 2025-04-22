@@ -15,17 +15,23 @@ interface Interest {
     name: string;
 }
 
+interface Movie {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+}
+
 interface User {
     name?: string;
     lastName?: string;
     email?: string;
     picture?: string;
     englishLevel?: string;
-    moviesStarted?: number;
+    movies?: Movie[];
     interests?: Interest[];
     error?: string;
 }
-
 
 const AccountPage = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -49,6 +55,7 @@ const AccountPage = () => {
         return null;
     }
 
+    const moviesStarted = user?.movies ? user.movies.length : 0;
 
     return (
         <Layout style={{minHeight: "100vh"}}>
@@ -66,7 +73,7 @@ const AccountPage = () => {
                             <Space direction="vertical" size="large" style={{width: "100%"}}>
                                 <ProfileDetail label="Email:" value={user?.email || "Not available"}/>
                                 <ProfileDetail label="English level:" value={user?.englishLevel || "Not set"}/>
-                                <ProfileDetail label="Movies started:" value={user?.moviesStarted || 0}/>
+                                <ProfileDetail label="Movies started:" value={moviesStarted}/>
 
                                 <div className="profile-detail">
                                     <Text className="profile-label">Interests:</Text>
@@ -74,15 +81,14 @@ const AccountPage = () => {
                                         {user?.interests && user.interests.length > 0 ? (
                                             user.interests.map((interest, index) => (
                                                 <span key={index} className="interest-badge">
-                    {interest.name}
-                </span>
+                                                    {interest.name}
+                                                </span>
                                             ))
                                         ) : (
                                             <Text>Not set</Text>
                                         )}
                                     </div>
                                 </div>
-
 
                                 <Button
                                     className="update-profile-btn"

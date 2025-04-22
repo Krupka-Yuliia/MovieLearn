@@ -1,5 +1,7 @@
 package co.movielearn.user;
 
+import java.util.ArrayList;
+
 public class UserMapper {
 
     public static UserDto toUserDto(User user) {
@@ -15,7 +17,8 @@ public class UserMapper {
                 user.getEnglishLevel(),
                 user.getProfilePic(),
                 user.getRole(),
-                user.getInterests()
+                user.getInterests(),
+                user.getMovies() == null ? new ArrayList<>() : user.getMovies()
         );
     }
 }

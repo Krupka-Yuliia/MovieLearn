@@ -1,5 +1,6 @@
 package co.movielearn.user;
 
+import co.movielearn.movie.Movie;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,5 @@ public class UserDto {
     private byte[] profilePic;
     private Role role;
     private List<Interest> interests = new ArrayList<>();
+    private List<Movie> movies = new ArrayList<>();
 }
