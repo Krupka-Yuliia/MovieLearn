@@ -17,6 +17,13 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({movie}) => {
     const fallbackImage = `https://picsum.photos/250/250?random=${movie.id}`;
 
+    const imageSource = movie.image
+        ? (movie.image.startsWith('data:image')
+            ? movie.image
+            : `data:image/jpeg;base64,${movie.image}`)
+        : fallbackImage;
+
+
     return (
         <Card
             hoverable
@@ -24,7 +31,7 @@ const MovieCard: React.FC<MovieCardProps> = ({movie}) => {
             cover={
                 <img
                     alt="movie cover"
-                    src={movie.image ? movie.image : fallbackImage}
+                    src={imageSource}
                     className="movie-card-cover"
                 />
             }

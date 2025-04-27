@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @Component
@@ -23,8 +24,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         UserDto userDto = userService.createUserFromOAuth2(oauth2User);
 
-        if (userDto.getEnglishLevel() != null) {
-            response.sendRedirect("http://localhost:5173/account");
+        if (userDto.getEnglishLevel() != null && userDto.getInterests() != null) {
+            response.sendRedirect("http://localhost:5173/home");
+        } else if (userDto.getEnglishLevel() != null) {
+            response.sendRedirect("http://localhost:5173/interests");
         } else {
             response.sendRedirect("http://localhost:5173/level");
         }

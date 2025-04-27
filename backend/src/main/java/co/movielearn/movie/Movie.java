@@ -1,6 +1,6 @@
 package co.movielearn.movie;
 
-import co.movielearn.user.Interest;
+import co.movielearn.genre.Genre;
 import co.movielearn.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,8 @@ public class Movie {
 
     @Lob
     private byte[] image;
+    @Lob
+    private byte[] script;
 
     @ManyToMany(mappedBy = "movies")
     private List<User> users = new ArrayList<>();

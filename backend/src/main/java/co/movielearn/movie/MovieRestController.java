@@ -3,6 +3,8 @@ package co.movielearn.movie;
 import co.movielearn.user.UserDto;
 import co.movielearn.user.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -29,17 +31,30 @@ public class MovieRestController {
 
     @GetMapping("/home")
     public List<MovieDto> getMoviesByUserId(@AuthenticationPrincipal OAuth2User principal) {
-        UserDto userDto = userService.getCurrentUser(principal.getAttribute("email"));
+        UserDto userDto = userService.getCurrentUser(principal);
         return movieService.getMoviesByUserId(userDto.getId());
     }
 
-    @PostMapping("/new")
-    public MovieDto createMovie(@RequestBody MovieDto movieDto) {
-        return movieService.addMovie(movieDto);
+    @PostMapping
+    public ResponseEntity<MovieDto> createMovie(
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("genres") String genres,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "script", required = false) MultipartFile script) {
+
+        try {
+            MovieDto movieDto = movieService.createMovie(title, description, genres, image, script);
+            return new ResponseEntity<>(movieDto, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @PutMapping("/uploadImage")
-    public void uploadImage(@RequestParam("file") MultipartFile file, Long movieId) {
-        movieService.addMovieImage(file, movieId);
+    @GetMapping("/count")
+    public int getMoviesCount(@AuthenticationPrincipal OAuth2User principal) {
+        UserDto userDto = userService.getCurrentUser(principal);
+        return movieService.getMoviesCountByUserId(userDto.getId());
     }
+
 }

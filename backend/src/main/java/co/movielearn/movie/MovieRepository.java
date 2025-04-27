@@ -10,4 +10,6 @@ import java.util.List;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findMoviesByUsers_Id(Long userId);
 
+    int countMoviesByUsers_Id(Long userId);
+
 }

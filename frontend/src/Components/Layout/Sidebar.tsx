@@ -1,34 +1,36 @@
 import React from "react";
-import {Layout, Menu, Button, Typography} from "antd";
-import {UserOutlined, LogoutOutlined, HomeOutlined, VideoCameraOutlined} from "@ant-design/icons";
+import { Layout, Menu, Button, Typography } from "antd";
+import { UserOutlined, LogoutOutlined, HomeOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import "./Layout.css";
-import {useNavigate} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const {Sider} = Layout;
-const {Title} = Typography;
+const { Sider } = Layout;
+const { Title } = Typography;
 
 const Sidebar: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
     const items = [
         {
-            key: '1',
-            icon: <HomeOutlined/>,
+            key: '/home',
+            icon: <HomeOutlined />,
             label: 'Home',
+            onClick: () => navigate('/home'),
         },
         {
-            key: '2',
-            icon: <VideoCameraOutlined/>,
+            key: '/movies',
+            icon: <VideoCameraOutlined />,
             label: 'Movies List',
             onClick: () => navigate('/movies'),
         },
         {
-            key: '3',
-            icon: <UserOutlined/>,
+            key: '/account',
+            icon: <UserOutlined />,
             label: 'Account',
             onClick: () => navigate('/account'),
         },
     ];
-
 
     const handleLogout = () => {
         window.location.href = "http://localhost:8080/logout";
@@ -44,7 +46,7 @@ const Sidebar: React.FC = () => {
                     </Title>
                     <Menu
                         mode="vertical"
-                        defaultSelectedKeys={['3']}
+                        selectedKeys={[location.pathname]}
                         className="sidebar-menu"
                         items={items}
                     />
@@ -52,7 +54,7 @@ const Sidebar: React.FC = () => {
                 <Button
                     type="primary"
                     className="sidebar-logout"
-                    icon={<LogoutOutlined/>}
+                    icon={<LogoutOutlined />}
                     onClick={handleLogout}
                 >
                     Log Out

@@ -1,5 +1,6 @@
 package co.movielearn.user;
 
+import co.movielearn.interests.Interest;
 import co.movielearn.movie.Movie;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

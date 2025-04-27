@@ -87,3 +87,16 @@
     padding: 20px;
     color: #666;
 }
+
+.layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}

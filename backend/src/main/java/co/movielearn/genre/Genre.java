@@ -1,4 +1,4 @@
-package co.movielearn.movie;
+package co.movielearn.genre;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

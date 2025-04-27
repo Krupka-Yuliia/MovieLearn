@@ -1,5 +1,7 @@
 package co.movielearn.user;
 
+import co.movielearn.interests.Interest;
+import co.movielearn.interests.InterestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -82,7 +83,6 @@ public class UserService {
         user.setInterests(interests);
         userRepository.save(user);
     }
-
 
 
     public void changeEnglishLevel(OAuth2User oauth2User, EnglishLevel level) {

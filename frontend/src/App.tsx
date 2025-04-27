@@ -8,6 +8,8 @@ import InterestsPage from "./Components/Interests/InterestsPage.tsx";
 import {useAuth} from "./Components/Auth/AuthContext";
 import {JSX} from "react";
 import MoviesList from "./Components/MoviesPages/MoviesList.tsx";
+import Home from "./Components/MoviesPages/Home.tsx";
+import NewMovieForm from "./Components/MoviesPages/NewMovieForm.tsx";
 
 function PrivateRoute({children}: { children: JSX.Element }) {
     const {user, loading} = useAuth();
@@ -48,6 +50,16 @@ function App() {
                 <Route path="/movies" element={
                     <PrivateRoute>
                         <MoviesList/>
+                    </PrivateRoute>
+                }/>
+                <Route path="/home" element={
+                    <PrivateRoute>
+                        <Home/>
+                    </PrivateRoute>
+                }/>
+                <Route path="/movies/new" element={
+                    <PrivateRoute>
+                        <NewMovieForm/>
                     </PrivateRoute>
                 }/>
             </Routes>

@@ -1,27 +1,24 @@
 package co.movielearn.movie;
 
+import co.movielearn.genre.Genre;
+import co.movielearn.genre.GenreRepository;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Service
 public class MovieService {
 
-    @Autowired
-    private MovieRepository movieRepository;
-    @Autowired
-    private MovieMapper movieMapper;
-    @Autowired
-    private GenreRepository genreRepository;
+    private final MovieRepository movieRepository;
+    private final MovieMapper movieMapper;
+    private final GenreRepository genreRepository;
 
     public List<MovieDto> getAllMovies() {
         List<Movie> movies = movieRepository.findAll();
@@ -43,39 +40,53 @@ public class MovieService {
                 .orElse(null);
     }
 
-    public MovieDto addMovie(MovieDto movieDto) {
+    public MovieDto createMovie(String title, String description, String genres, MultipartFile image, MultipartFile script) {
         Movie movie = new Movie();
+        movie.setTitle(title);
+        movie.setDescription(description);
 
-        movie.setTitle(movieDto.getTitle());
-        movie.setDescription(movieDto.getDescription());
-
-        for (String genreName : movieDto.getGenres()) {
-            Genre genre = genreRepository.findByName(genreName);
+        List<Genre> genreList = new ArrayList<>();
+        for (String genreName : genres.split(",")) {
+            Genre genre = genreRepository.findByName(genreName.trim());
             if (genre != null) {
-                movie.getGenres().add(genre);
+                genreList.add(genre);
             }
         }
-
-        movie.setImage(movieDto.getImage() != null ? movieDto.getImage() : null);
+        movie.setGenres(genreList);
         movie = movieRepository.save(movie);
+
+        if (image != null && !image.isEmpty()) {
+            saveImage(image, movie);
+        }
+
+        if (script != null && !script.isEmpty()) {
+            saveScript(script, movie);
+        }
+
         return movieMapper.toDTO(movie);
     }
 
-    public void addMovieImage(MultipartFile file, Long movieId) {
-        Optional<Movie> movie = movieRepository.findById(movieId);
-        if (movie.isPresent()) {
-            try {
-                byte[] imageBytes = file.getBytes();
-                Movie existingMovie = movie.get();
-                existingMovie.setImage(imageBytes);
-                movieRepository.save(existingMovie);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload image", e);
-            }
-        } else {
-            throw new RuntimeException("Movie not found with ID: " + movieId);
+    public int getMoviesCountByUserId(Long userId) {
+        return movieRepository.countMoviesByUsers_Id(userId);
+    }
+
+    private void saveImage(MultipartFile file, Movie movie) {
+        try {
+            byte[] imageBytes = file.getBytes();
+            movie.setImage(imageBytes);
+            movieRepository.save(movie);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image", e);
         }
     }
 
-
+    private void saveScript(MultipartFile file, Movie movie) {
+        try {
+            byte[] scriptBytes = file.getBytes();
+            movie.setScript(scriptBytes);
+            movieRepository.save(movie);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload script", e);
+        }
+    }
 }

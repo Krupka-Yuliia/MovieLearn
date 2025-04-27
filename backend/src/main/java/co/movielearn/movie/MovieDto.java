@@ -15,6 +15,6 @@ public class MovieDto {
     private String title;
     private String description;
     private List<String> genres;
-    private List<User> users;
     private byte[] image;
+    private byte[] script;
 }

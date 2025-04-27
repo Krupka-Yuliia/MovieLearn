@@ -1,4 +1,4 @@
-package co.movielearn.user;
+package co.movielearn.interests;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

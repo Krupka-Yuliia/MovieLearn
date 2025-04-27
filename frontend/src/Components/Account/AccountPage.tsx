@@ -4,6 +4,7 @@ import Sidebar from "../Layout/Sidebar";
 import TopBar from "../Layout/TopBar";
 import FooterBar from "../Layout/Footer";
 import "./AccountPage.css";
+import "../Layout/Layout.css";
 import {useNavigate} from "react-router-dom";
 import {EditOutlined} from "@ant-design/icons";
 import {message as antMessage} from "antd";
@@ -15,26 +16,19 @@ interface Interest {
     name: string;
 }
 
-interface Movie {
-    id: number;
-    title: string;
-    description: string;
-    image: string;
-}
-
 interface User {
     name?: string;
     lastName?: string;
     email?: string;
     picture?: string;
     englishLevel?: string;
-    movies?: Movie[];
     interests?: Interest[];
     error?: string;
 }
 
 const AccountPage = () => {
     const [user, setUser] = useState<User | null>(null);
+    const [moviesStarted, setMoviesStarted] = useState<number>(0);
     const [customMessage, contextHolder] = antMessage.useMessage();
     const navigate = useNavigate();
 
@@ -44,26 +38,33 @@ const AccountPage = () => {
             customMessage.success(successMessage);
             localStorage.removeItem("updateSuccess");
         }
+
         fetch("/api/users/account", {credentials: "include"})
             .then((res) => res.json())
             .then((data: User) => setUser(data))
             .catch((error) => console.error("Error fetching user data:", error));
-    }, []);
+
+        fetch("/api/movies/count", {credentials: "include"})
+            .then((res) => res.json())
+            .then((count: number) => {
+                setMoviesStarted(count);
+            })
+            .catch((error) => console.error("Error fetching movie count:", error));
+    }, [customMessage]);
+
 
     if (user?.error) {
         navigate("/");
         return null;
     }
 
-    const moviesStarted = user?.movies ? user.movies.length : 0;
-
     return (
-        <Layout style={{minHeight: "100vh"}}>
+        <Layout className="layout">
             {contextHolder}
             <Sidebar/>
             <Layout>
                 <TopBar/>
-                <Content style={{margin: "20px", display: "flex", justifyContent: "center"}}>
+                <Content className="content">
                     <div className="profile-container">
                         <div className="profile-header">
                             <Avatar src="/api/users/profile-picture" size={80}/>
@@ -73,7 +74,8 @@ const AccountPage = () => {
                             <Space direction="vertical" size="large" style={{width: "100%"}}>
                                 <ProfileDetail label="Email:" value={user?.email || "Not available"}/>
                                 <ProfileDetail label="English level:" value={user?.englishLevel || "Not set"}/>
-                                <ProfileDetail label="Movies started:" value={moviesStarted}/>
+                                <ProfileDetail label="Movies started:" value={moviesStarted || 0}/>
+
 
                                 <div className="profile-detail">
                                     <Text className="profile-label">Interests:</Text>
@@ -81,8 +83,8 @@ const AccountPage = () => {
                                         {user?.interests && user.interests.length > 0 ? (
                                             user.interests.map((interest, index) => (
                                                 <span key={index} className="interest-badge">
-                                                    {interest.name}
-                                                </span>
+                          {interest.name}
+                        </span>
                                             ))
                                         ) : (
                                             <Text>Not set</Text>
