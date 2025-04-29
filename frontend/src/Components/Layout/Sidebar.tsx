@@ -1,36 +1,46 @@
 import React from "react";
-import { Layout, Menu, Button, Typography } from "antd";
-import { UserOutlined, LogoutOutlined, HomeOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import {Layout, Menu, Button, Typography} from "antd";
+import {UserOutlined, LogoutOutlined, HomeOutlined, VideoCameraOutlined, PlusOutlined} from "@ant-design/icons";
 import "./Layout.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
+import {useAuth} from "../Auth/AuthContext.tsx";
 
-const { Sider } = Layout;
-const { Title } = Typography;
+const {Sider} = Layout;
+const {Title} = Typography;
 
 const Sidebar: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const {user} = useAuth();
 
     const items = [
         {
             key: '/home',
-            icon: <HomeOutlined />,
+            icon: <HomeOutlined/>,
             label: 'Home',
             onClick: () => navigate('/home'),
         },
         {
             key: '/movies',
-            icon: <VideoCameraOutlined />,
+            icon: <VideoCameraOutlined/>,
             label: 'Movies List',
             onClick: () => navigate('/movies'),
         },
         {
             key: '/account',
-            icon: <UserOutlined />,
+            icon: <UserOutlined/>,
             label: 'Account',
             onClick: () => navigate('/account'),
         },
     ];
+    if (user && user.role === 'ADMIN') {
+        items.push({
+            key: '/movies/new',
+            icon: <PlusOutlined/>,
+            label: 'New Movie',
+            onClick: () => navigate('/movies/new'),
+        });
+    }
 
     const handleLogout = () => {
         window.location.href = "http://localhost:8080/logout";
@@ -54,7 +64,7 @@ const Sidebar: React.FC = () => {
                 <Button
                     type="primary"
                     className="sidebar-logout"
-                    icon={<LogoutOutlined />}
+                    icon={<LogoutOutlined/>}
                     onClick={handleLogout}
                 >
                     Log Out

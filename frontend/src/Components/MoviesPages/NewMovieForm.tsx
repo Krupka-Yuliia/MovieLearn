@@ -10,13 +10,15 @@ import {
     Space,
     message,
     Spin,
-    Layout, UploadFile
+    Layout,
+    UploadFile
 } from 'antd';
-import {UploadOutlined, SaveOutlined, CloseOutlined} from '@ant-design/icons';
+import {UploadOutlined, SaveFilled, CloseOutlined} from '@ant-design/icons';
 import Sidebar from '../Layout/Sidebar';
 import TopBar from '../Layout/TopBar';
 import Footer from '../Layout/Footer';
 import '../Layout/Layout.css';
+import './MoviesList.css';
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 
@@ -37,7 +39,6 @@ interface FormValues {
     image?: UploadFile<unknown>[];
     script?: UploadFile<unknown>[];
 }
-
 
 const NewMovieForm: React.FC = () => {
     const [form] = Form.useForm();
@@ -72,9 +73,7 @@ const NewMovieForm: React.FC = () => {
             const formData = new FormData();
             formData.append('title', values.title);
             formData.append('description', values.description);
-
-            const genresString = values.genres.join(',');
-            formData.append('genres', genresString);
+            formData.append('genres', values.genres.join(','));
 
             if (imageFile) {
                 formData.append('image', imageFile);
@@ -108,7 +107,7 @@ const NewMovieForm: React.FC = () => {
         form.resetFields();
         setImageFile(null);
         setScriptFile(null);
-        message.info('Form cleared');
+        navigate('/movies');
     };
 
     const beforeImageUpload = (file: File) => {
@@ -158,14 +157,14 @@ const NewMovieForm: React.FC = () => {
             <Layout>
                 <TopBar/>
 
-                <div style={{flex: 1, padding: '24px', background: '#f5f5f5', overflowY: 'auto'}}>
-                    <Title level={2} style={{ textAlign: 'center' }}>
-                        Add New Movie
+                <div className="add-movie-page">
+                    <Title level={2} className="add-movie-title">
+                        New movie
                     </Title>
 
-                    <Card style={{maxWidth: '650px', margin: '0 auto'}}>
+                    <Card className="movie-form-card">
                         {loading ? (
-                            <div style={{textAlign: 'center', padding: '40px'}}>
+                            <div className="loading-spinner">
                                 <Spin size="large"/>
                             </div>
                         ) : (
@@ -178,23 +177,38 @@ const NewMovieForm: React.FC = () => {
                                 <Form.Item
                                     name="title"
                                     label="Movie Title"
-                                    rules={[{required: true, message: 'Please enter the movie title'}]}
+                                    rules={[
+                                        {required: true, message: 'Please enter movie title'},
+                                        {min: 2, message: 'Name must be at least 2 characters'},
+                                        {max: 50, message: 'Name must be at most 50 characters'},
+                                    ]}
                                 >
-                                    <Input placeholder="Enter movie title"/>
+                                    <Input placeholder="Enter movie title" className="dynamic-input"/>
                                 </Form.Item>
 
                                 <Form.Item
                                     name="description"
                                     label="Description"
-                                    rules={[{required: true, message: 'Please enter movie description'}]}
+                                    rules={[
+                                        {required: true, message: 'Please enter movie description'},
+                                        {min: 2, message: 'Description must be at least 2 characters'},
+                                        {max: 500, message: 'Description must be at most 500 characters'},
+                                    ]}
                                 >
-                                    <TextArea rows={4} placeholder="Movie description"/>
+                                    <TextArea rows={4} placeholder="Movie description" className="dynamic-input"/>
                                 </Form.Item>
 
                                 <Form.Item
                                     name="genres"
                                     label="Genres"
-                                    rules={[{required: true, message: 'Please select at least one genre'}]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            type: 'array',
+                                            min: 1,
+                                            message: 'Please choose at least one genre',
+                                        },
+                                    ]}
                                 >
                                     <Select
                                         mode="multiple"
@@ -233,6 +247,7 @@ const NewMovieForm: React.FC = () => {
                                 <Form.Item
                                     name="script"
                                     label="Movie Script (PDF, DOC, DOCX, TXT)"
+                                    rules={[{required: true, message: 'Please upload a movie script'}]}
                                     valuePropName="fileList"
                                     getValueFromEvent={(e) => e && e.fileList}
                                 >
@@ -251,18 +266,19 @@ const NewMovieForm: React.FC = () => {
                                 </Form.Item>
 
                                 <Form.Item>
-                                    <Space>
+                                    <Space className="centered-buttons">
                                         <Button
-                                            type="primary"
+                                            className="yellow-btn"
                                             htmlType="submit"
-                                            icon={<SaveOutlined/>}
                                             loading={submitting}
+                                            icon=<SaveFilled/>
                                         >
                                             Save
                                         </Button>
                                         <Button
                                             onClick={handleCancel}
                                             icon={<CloseOutlined/>}
+                                            className="blue-btn"
                                         >
                                             Cancel
                                         </Button>

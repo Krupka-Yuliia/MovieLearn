@@ -138,12 +138,10 @@ const UpdateProfilePage = () => {
         if (user) form.setFieldsValue(user);
         setPreviewAvatar(originalAvatar);
         setAvatarFile(null);
-        // Reset the fileList when canceling
         setFileList([]);
         navigate("/account");
     };
 
-    // Modified upload props with file list control
     const uploadProps = {
         fileList: fileList,
         beforeUpload: (file: File) => {
@@ -158,7 +156,6 @@ const UpdateProfilePage = () => {
                 return Upload.LIST_IGNORE;
             }
 
-            // Clear previous file and add new one
             setFileList([{
                 uid: '-1',
                 name: file.name,
@@ -201,10 +198,32 @@ const UpdateProfilePage = () => {
                         <div className="profile-card">
                             <Card className="profile-card">
                                 <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                                    <Form.Item label="Name" name="name">
+                                    <Form.Item label="Name"
+                                               name="name"
+                                               rules={[
+                                                   {required: true, message: 'Please enter your name'},
+                                                   {min: 2, message: 'Name must be at least 2 characters'},
+                                                   {max: 30, message: 'Name must be at most 30 characters'},
+                                                   {
+                                                       pattern: /^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]+$/,
+                                                       message: 'Name can contain only letters (Latin or Cyrillic)'
+                                                   }
+                                               ]}
+                                    >
                                         <Input placeholder="Enter your name"/>
                                     </Form.Item>
-                                    <Form.Item label="Last Name" name="lastName">
+                                    <Form.Item label="Last Name"
+                                               name="lastName"
+                                               rules={[
+                                                   {required: true, message: 'Please enter your name'},
+                                                   {min: 2, message: 'Name must be at least 2 characters'},
+                                                   {max: 30, message: 'Name must be at most 30 characters'},
+                                                   {
+                                                       pattern: /^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]+$/,
+                                                       message: 'Name can contain only letters (Latin or Cyrillic)'
+                                                   }
+                                               ]}
+                                    >
                                         <Input placeholder="Enter your last name"/>
                                     </Form.Item>
                                     <Form.Item label="English Level" name="englishLevel">
@@ -216,7 +235,16 @@ const UpdateProfilePage = () => {
                                             ))}
                                         </Radio.Group>
                                     </Form.Item>
-                                    <Form.Item label="Interests" name="interests">
+                                    <Form.Item label="Interests"
+                                               name="interests"
+                                               rules={[
+                                                   {
+                                                       required: true,
+                                                       type: 'array',
+                                                       min: 1,
+                                                       message: 'Please choose at least one interest',
+                                                   },
+                                               ]}>
                                         <Checkbox.Group options={interestsList}/>
                                     </Form.Item>
                                     <Form.Item>

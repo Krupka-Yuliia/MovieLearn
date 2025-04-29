@@ -6,27 +6,40 @@ import UpdateAccountPage from "./Components/Account/UpdateAccountPage.tsx";
 import InterestsPage from "./Components/Interests/InterestsPage.tsx";
 
 import {useAuth} from "./Components/Auth/AuthContext";
-import {JSX} from "react";
-import MoviesList from "./Components/MoviesPages/MoviesList.tsx";
+import {JSX, useEffect, useState} from "react";
 import Home from "./Components/MoviesPages/Home.tsx";
+import MoviesList from "./Components/MoviesPages/MoviesList.tsx";
 import NewMovieForm from "./Components/MoviesPages/NewMovieForm.tsx";
 
-function PrivateRoute({children}: { children: JSX.Element }) {
-    const {user, loading} = useAuth();
+function PrivateRoute({children, requiredRole}: { children: JSX.Element, requiredRole?: string }) {
+    const { user, loading } = useAuth();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (user && requiredRole && user.role !== requiredRole) {
+            setErrorMessage('You do not have the required role to access this page. Redirecting to Movies list.');
+        }
+    }, [user, requiredRole]);
 
     if (loading) {
         return <div>Loading...</div>;
     }
 
-    return user ? children : <Navigate to="/login"/>;
+    if (!user) {
+        return <Navigate to="/"/>;
+    } else if (requiredRole && user.role !== requiredRole) {
+        return <Navigate to="/movies" state={{ errorMessage }} />;
+    }
+
+    return children;
 }
+
 
 function App() {
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<LoginPage/>}/>
-                <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/account" element={
                     <PrivateRoute>
                         <AccountPage/>
@@ -47,18 +60,18 @@ function App() {
                         <UpdateAccountPage/>
                     </PrivateRoute>
                 }/>
-                <Route path="/movies" element={
-                    <PrivateRoute>
-                        <MoviesList/>
-                    </PrivateRoute>
-                }/>
                 <Route path="/home" element={
                     <PrivateRoute>
                         <Home/>
                     </PrivateRoute>
                 }/>
-                <Route path="/movies/new" element={
+                <Route path="/movies" element={
                     <PrivateRoute>
+                        <MoviesList/>
+                    </PrivateRoute>
+                }/>
+                <Route path="/movies/new" element={
+                    <PrivateRoute requiredRole="ADMIN">
                         <NewMovieForm/>
                     </PrivateRoute>
                 }/>

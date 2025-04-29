@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {Layout, Row, Col, Typography, Pagination, Spin, Empty, Button} from 'antd';
+import React, {useState, useEffect, useRef} from 'react';
+import {Layout, Row, Col, Typography, Pagination, Spin, Empty, message as antMessage} from 'antd';
 import './MoviesList.css';
 import '../Layout/Layout.css';
 
@@ -8,9 +8,9 @@ import TopBar from "../Layout/TopBar";
 import FooterBar from "../Layout/Footer";
 import MovieCard from "./MovieCard.tsx";
 import {Content} from "antd/es/layout/layout";
-import {useNavigate} from "react-router-dom";
+import {useLocation} from 'react-router-dom';
 
-const { Title, Text } = Typography;
+const {Title} = Typography;
 
 interface Movie {
     id: number;
@@ -24,17 +24,26 @@ const MoviesList: React.FC = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [customMessage, contextHolder] = antMessage.useMessage();
 
+    const location = useLocation();
+    const errorShownRef = useRef(false);
     const pageSize = 8;
     const currentMovies = movies.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (location.state?.errorMessage && !errorShownRef.current) {
+            customMessage.error(location.state.errorMessage);
+            errorShownRef.current = true;
+        }
+    }, [location.state?.errorMessage, customMessage]);
 
     useEffect(() => {
         const fetchMovies = async () => {
             setLoading(true);
             try {
                 const response = await fetch('http://localhost:8080/api/movies', {
-                    credentials: 'include'
+                    credentials: 'include',
                 });
                 if (!response.ok) throw new Error('Failed to fetch movies');
                 const data = await response.json();
@@ -50,27 +59,19 @@ const MoviesList: React.FC = () => {
         fetchMovies();
     }, []);
 
-    const handleAddMovie = () => {
-        navigate('/movies/new');
-    };
-
     return (
         <Layout>
-            <Sidebar />
+            <Sidebar/>
             <Layout className="layout">
-                <TopBar />
+                <TopBar/>
+                {contextHolder}
                 <Content>
                     <Row className="title-row">
                         <Col>
-                            <Title level={3}>Movies List</Title>
-                            <Text>Choose your movie to start a lesson!</Text>
-                        </Col>
-                        <Col>
-                            <Button type="primary" onClick={handleAddMovie}>
-                                Add New Movie
-                            </Button>
+                            <Title level={4} className="subtitle">Choose your movie to start a lesson!</Title>
                         </Col>
                     </Row>
+
                     <div className="movies-container">
                         <div className="movies-list">
                             {loading ? (

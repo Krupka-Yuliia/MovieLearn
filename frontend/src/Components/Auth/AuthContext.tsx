@@ -1,7 +1,7 @@
-import React, {createContext, useContext, useState, useEffect} from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface AuthContextType {
-    user: unknown;
+    user: { role: string } | null;
     loading: boolean;
     login: () => Promise<void>;
     logout: () => void;
@@ -9,14 +9,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({children}: { children: React.ReactNode }) {
-    const [user, setUser] = useState(null);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [user, setUser] = useState<{ role: string } | null>(null);
     const [loading, setLoading] = useState(true);
-
 
     useEffect(() => {
         async function checkAuth() {
-            fetch("/api/users/account", {credentials: "include"})
+            fetch("/api/users/account", { credentials: "include" })
                 .then((res) => res.json())
                 .then((data) => {
                     setUser(data);
@@ -33,7 +32,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     }, []);
 
     async function login() {
-        window.location.href = "/oauth2/authorization/google";
+        window.location.href = "http://localhost:8080/oauth2/authorization/google";
     }
 
     function logout() {
@@ -41,7 +40,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{user, loading, login, logout}}>
+        <AuthContext.Provider value={{ user, loading, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

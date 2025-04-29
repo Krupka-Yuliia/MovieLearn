@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import './InterestsPage.css';
-import { Typography } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import {Typography} from 'antd';
+import {useNavigate} from 'react-router-dom';
 
-const { Title, Text } = Typography;
+const {Title, Text} = Typography;
+import {message as antMessage} from "antd";
 
 interface Interest {
     id: number;
@@ -16,6 +17,7 @@ const Interests: React.FC = () => {
     const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const apiBaseUrl = `${window.location.protocol}//localhost:8080`;
+    const [customMessage, contextHolder] = antMessage.useMessage();
 
     useEffect(() => {
         const fetchInterests = async () => {
@@ -41,6 +43,11 @@ const Interests: React.FC = () => {
     }, [apiBaseUrl]);
 
     const saveInterests = async () => {
+        if (selectedInterests.length === 0) {
+            customMessage.error("Choose at least one interest");
+            return;
+        }
+
         try {
             const response = await fetch(`${apiBaseUrl}/api/users/interests`, {
                 method: 'PUT',
@@ -59,8 +66,10 @@ const Interests: React.FC = () => {
             }
         } catch (error) {
             console.error(error);
+            customMessage.error("An error occurred while saving interests");
         }
     };
+
 
     const toggleInterest = (interest: string) => {
         setSelectedInterests((prevState) =>
@@ -84,6 +93,7 @@ const Interests: React.FC = () => {
 
     return (
         <div className="login-container">
+            {contextHolder}
             <Title className="logo">
                 <span className="logo-blue">MOVIE</span>
                 <span className="logo-orange">LEARN</span>
@@ -108,10 +118,10 @@ const Interests: React.FC = () => {
             <button
                 className="home-button"
                 onClick={saveInterests}
-                disabled={selectedInterests.length === 0}
             >
                 Save Interests
             </button>
+
         </div>
     );
 };
