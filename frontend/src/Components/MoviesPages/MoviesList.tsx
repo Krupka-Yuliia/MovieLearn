@@ -25,9 +25,10 @@ const MoviesList: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [customMessage, contextHolder] = antMessage.useMessage();
+    const errorShownRef = useRef(false);
+    const successShownRef = useRef(false);
 
     const location = useLocation();
-    const errorShownRef = useRef(false);
     const pageSize = 8;
     const currentMovies = movies.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -36,13 +37,18 @@ const MoviesList: React.FC = () => {
             customMessage.error(location.state.errorMessage);
             errorShownRef.current = true;
         }
-    }, [location.state?.errorMessage, customMessage]);
+        if (location.state?.successMessage && !successShownRef.current) {
+            customMessage.success(location.state.successMessage);
+            successShownRef.current = true;
+        }
+    }, [location.state, customMessage]);
+
 
     useEffect(() => {
         const fetchMovies = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost:8080/api/movies', {
+                const response = await fetch('/api/movies', {
                     credentials: 'include',
                 });
                 if (!response.ok) throw new Error('Failed to fetch movies');
@@ -68,7 +74,7 @@ const MoviesList: React.FC = () => {
                 <Content>
                     <Row className="title-row">
                         <Col>
-                            <Title level={4} className="subtitle">Choose your movie to start a lesson!</Title>
+                            <Title level={5} className="subtitle">Choose your movie to start a lesson!</Title>
                         </Col>
                     </Row>
 
@@ -82,7 +88,7 @@ const MoviesList: React.FC = () => {
                                 <Row gutter={[12, 12]} style={{width: '100%'}}>
                                     {currentMovies.map((movie) => (
                                         <Col
-                                            xs={24}
+                                            xs={12}
                                             sm={12}
                                             md={8}
                                             lg={6}

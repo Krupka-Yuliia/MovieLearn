@@ -40,6 +40,14 @@ public class MovieService {
                 .orElse(null);
     }
 
+    public List<MovieDto> getMoviesByGenre(String genre) {
+        return movieRepository.findByGenreIgnoreCase(genre)
+                .stream()
+                .map(movieMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
     public MovieDto createMovie(String title, String description, String genres, MultipartFile image, MultipartFile script) {
         Movie movie = new Movie();
         movie.setTitle(title);
@@ -88,5 +96,9 @@ public class MovieService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload script", e);
         }
+    }
+
+    public void deleteMovie(Long id) {
+        movieRepository.deleteById(id);
     }
 }

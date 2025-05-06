@@ -10,9 +10,12 @@ import {JSX, useEffect, useState} from "react";
 import Home from "./Components/MoviesPages/Home.tsx";
 import MoviesList from "./Components/MoviesPages/MoviesList.tsx";
 import NewMovieForm from "./Components/MoviesPages/NewMovieForm.tsx";
+import MovieDetails from "./Components/MoviesPages/MovieDetails.tsx";
+import NewGenreForm from "./Components/MoviesPages/NewGenreForm.tsx";
+import NewInterestsForm from "./Components/Interests/NewInterestsForm.tsx";
 
 function PrivateRoute({children, requiredRole}: { children: JSX.Element, requiredRole?: string }) {
-    const { user, loading } = useAuth();
+    const {user, loading} = useAuth();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
@@ -28,7 +31,7 @@ function PrivateRoute({children, requiredRole}: { children: JSX.Element, require
     if (!user) {
         return <Navigate to="/"/>;
     } else if (requiredRole && user.role !== requiredRole) {
-        return <Navigate to="/movies" state={{ errorMessage }} />;
+        return <Navigate to="/movies" state={{errorMessage}}/>;
     }
 
     return children;
@@ -73,6 +76,21 @@ function App() {
                 <Route path="/movies/new" element={
                     <PrivateRoute requiredRole="ADMIN">
                         <NewMovieForm/>
+                    </PrivateRoute>
+                }/>
+                <Route path="/movies/:id" element={
+                    <PrivateRoute>
+                        <MovieDetails/>
+                    </PrivateRoute>
+                }/>
+                <Route path="/genres/new" element={
+                    <PrivateRoute requiredRole="ADMIN">
+                        <NewGenreForm/>
+                    </PrivateRoute>
+                }/>
+                <Route path="/interests/new" element={
+                    <PrivateRoute requiredRole="ADMIN">
+                        <NewInterestsForm/>
                     </PrivateRoute>
                 }/>
             </Routes>

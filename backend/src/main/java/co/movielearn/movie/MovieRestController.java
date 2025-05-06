@@ -57,4 +57,19 @@ public class MovieRestController {
         return movieService.getMoviesCountByUserId(userDto.getId());
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+    }
+
+    @GetMapping("/movies")
+    public List<MovieDto> getMovies(@RequestParam String genre) {
+        if (genre == null || genre.equalsIgnoreCase("all")) {
+            return movieService.getAllMovies();
+        } else {
+            return movieService.getMoviesByGenre(genre);
+        }
+    }
+
+
 }

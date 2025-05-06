@@ -11,36 +11,61 @@ interface Interest {
     name: string;
 }
 
+const backupInterests: Interest[] = [
+    { id: 1, name: 'Sport' },
+    { id: 2, name: 'Fashion' },
+    { id: 3, name: 'Food' },
+    { id: 4, name: 'Space' },
+    { id: 5, name: 'Art' },
+    { id: 6, name: 'Traveling' },
+    { id: 7, name: 'Literature' },
+    { id: 8, name: 'Humor' },
+    { id: 9, name: 'Music' },
+    { id: 10, name: 'Science' },
+];
+
+
 const Interests: React.FC = () => {
     const navigate = useNavigate();
-    const [interestsList, setInterestsList] = useState<Interest[]>([]);
+    const [interestsList, setInterestsList] = useState<Interest[]>(backupInterests); // Initialize with backup
     const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const apiBaseUrl = `${window.location.protocol}//localhost:8080`;
     const [customMessage, contextHolder] = antMessage.useMessage();
+    const [usingBackup, setUsingBackup] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchInterests = async () => {
             try {
-                const response = await fetch(`${apiBaseUrl}/api/interests`, {
+                const response = await fetch(`api/interests`, {
                     credentials: 'include'
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    setInterestsList(data);
+                    if (Array.isArray(data) && data.length > 0) {
+                        setInterestsList(data);
+                        setUsingBackup(false);
+                    } else {
+                        console.warn('Empty interests list received, using fallback');
+                        setInterestsList(backupInterests);
+                        setUsingBackup(true);
+                    }
                 } else {
-                    console.error('Failed to fetch interests');
+                    console.error('Failed to fetch interests, using fallback');
+                    setInterestsList(backupInterests);
+                    setUsingBackup(true);
                 }
             } catch (error) {
                 console.error('Error fetching interests:', error);
+                setInterestsList(backupInterests);
+                setUsingBackup(true);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchInterests();
-    }, [apiBaseUrl]);
+    });
 
     const saveInterests = async () => {
         if (selectedInterests.length === 0) {
@@ -49,20 +74,35 @@ const Interests: React.FC = () => {
         }
 
         try {
-            const response = await fetch(`${apiBaseUrl}/api/users/interests`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(selectedInterests),
-                credentials: 'include'
-            });
+            let saveSuccess = false;
 
-            if (response.ok) {
+            try {
+                const response = await fetch(`api/users/interests`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(selectedInterests),
+                    credentials: 'include'
+                });
+
+                saveSuccess = response.ok;
+            } catch (apiError) {
+                console.error('API error:', apiError);
+                saveSuccess = false;
+            }
+
+            if (saveSuccess) {
                 console.log('Interests saved successfully!');
                 navigate("/home");
             } else {
-                throw new Error('Failed to save interests');
+                if (usingBackup) {
+                    localStorage.setItem('userInterests', JSON.stringify(selectedInterests));
+                    console.log('Saved interests using local storage as fallback.');
+                    navigate("/home");
+                } else {
+                    throw new Error('Failed to save interests');
+                }
             }
         } catch (error) {
             console.error(error);
@@ -100,6 +140,11 @@ const Interests: React.FC = () => {
             </Title>
 
             <Text className="subtitle">Tell us your interests</Text>
+            {usingBackup && (
+                <Text type="warning" style={{ marginBottom: '10px' }}>
+                    Using backup interests list
+                </Text>
+            )}
             <div className="buttons">
                 {interestsList.map((interest) => (
                     <button

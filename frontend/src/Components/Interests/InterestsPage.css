@@ -82,3 +82,18 @@
     box-shadow: 0 4px 12px rgba(90, 115, 219, 0.3);
 }
 
+.Interest-form-card {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-Interest-container {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+

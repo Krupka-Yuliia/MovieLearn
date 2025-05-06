@@ -13,8 +13,8 @@ const LoginPage = () => {
     return (
         <div className="login-container">
             <Typography.Title className="logo">
-                <span className="logo-blue">MOVIE</span>
-                <span className="logo-orange">LEARN</span>
+                <span className="logo-blue logo-part">MOVIE</span>
+                <span className="logo-orange logo-part">LEARN</span>
             </Typography.Title>
 
             <Typography.Text className="subtitle">

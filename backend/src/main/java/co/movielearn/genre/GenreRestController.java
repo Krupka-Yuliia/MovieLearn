@@ -15,4 +15,24 @@ public class GenreRestController {
     public List<Genre> getAllGenres() {
         return genreService.getAllGenres();
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteGenre(@PathVariable Long id) {
+        genreService.deleteGenreById(id);
+    }
+
+    @PutMapping("/{id}")
+    public void updateGenre(@PathVariable Long id, @RequestBody Genre genre) {
+        genreService.updateGenre(id, genre);
+    }
+
+    @PostMapping
+    public void addGenre(@RequestBody Genre genre) {
+        genreService.saveGenre(genre);
+    }
+
+    @GetMapping("/{id}")
+    public Genre getGenreById(@PathVariable Long id) {
+        return genreService.getGenreById(id);
+    }
 }

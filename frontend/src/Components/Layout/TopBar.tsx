@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Layout, Avatar, Typography } from "antd";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Layout, Avatar, Typography} from "antd";
+import {useNavigate} from "react-router-dom";
 import "./Layout.css";
 
-const { Header } = Layout;
-const { Text } = Typography;
+const {Header} = Layout;
+const {Text} = Typography;
 
 interface User {
     name?: string;
@@ -18,7 +18,7 @@ const TopBar: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("/api/users/account", { credentials: "include" })
+        fetch("/api/users/account", {credentials: "include"})
             .then(response => response.json())
             .then((data: User) => setUser(data))
             .catch(error => console.error("Error fetching user data:", error))
@@ -26,6 +26,7 @@ const TopBar: React.FC = () => {
 
     return (
         <Header className="topbar">
+
             <div className="topbar-user">
                 <Avatar
                     size="small"
