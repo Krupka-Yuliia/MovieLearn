@@ -251,5 +251,49 @@
     margin: 20px auto 0 auto;
 }
 
+@media (max-width: 600px) {
+    .genres-list .ant-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 12px;
+    }
+
+    .genres-list .ant-list-item strong {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .genres-list .ant-list-item > .ant-list-item-action {
+        margin-left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .genres-list {
+        padding: 8px;
+    }
+
+    .add-genre-container {
+        padding: 16px 8px;
+    }
+
+    .genre-form-card,
+    .genre-list-card {
+        padding: 16px;
+    }
+
+    .centered-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .yellow-btn,
+    .blue-btn {
+        width: 100%;
+    }
+}
 
 

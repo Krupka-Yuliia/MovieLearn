@@ -2,6 +2,7 @@ package co.movielearn.movie;
 
 import co.movielearn.genre.Genre;
 import co.movielearn.genre.GenreRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,6 +74,56 @@ public class MovieService {
 
         return movieMapper.toDTO(movie);
     }
+
+    public MovieDto updateMovie(Long movieId, MovieDto movieDto) {
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+
+        if (movieDto.getTitle() != null && !movieDto.getTitle().isBlank()) {
+            movie.setTitle(movieDto.getTitle());
+        }
+
+        if (movieDto.getDescription() != null && !movieDto.getDescription().isBlank()) {
+            movie.setDescription(movieDto.getDescription());
+        }
+
+        if (movieDto.getGenres() != null && !movieDto.getGenres().isEmpty()) {
+            List<Genre> genreList = new ArrayList<>();
+            for (String genreName : movieDto.getGenres()) {
+                Genre genre = genreRepository.findByName(genreName.trim());
+                if (genre != null) {
+                    genreList.add(genre);
+                }
+            }
+            movie.setGenres(genreList);
+        }
+
+        movie = movieRepository.save(movie);
+        return movieMapper.toDTO(movie);
+    }
+
+    public MovieDto updateMovieImage(Long movieId, MultipartFile image) {
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+
+        if (image != null && !image.isEmpty()) {
+            saveImage(image, movie);
+        }
+
+        return movieMapper.toDTO(movie);
+    }
+
+    public MovieDto updateMovieScript(Long movieId, MultipartFile script) {
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+
+        if (script != null && !script.isEmpty()) {
+            saveScript(script, movie);
+        }
+
+        return movieMapper.toDTO(movie);
+    }
+
 
     public int getMoviesCountByUserId(Long userId) {
         return movieRepository.countMoviesByUsers_Id(userId);

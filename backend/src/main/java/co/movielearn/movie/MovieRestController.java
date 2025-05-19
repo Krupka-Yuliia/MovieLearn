@@ -4,6 +4,7 @@ import co.movielearn.user.UserDto;
 import co.movielearn.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -71,5 +73,49 @@ public class MovieRestController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<MovieDto> updateMovie(
+            @PathVariable Long id,
+            @RequestBody MovieDto movieDto
+    ) {
+        MovieDto updatedMovie = movieService.updateMovie(id, movieDto);
+        return ResponseEntity.ok(updatedMovie);
+    }
+
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MovieDto> updateMovieImage(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile image
+    ) {
+        MovieDto updatedMovie = movieService.updateMovieImage(id, image);
+        return ResponseEntity.ok(updatedMovie);
+    }
+
+    @PostMapping(value = "/{id}/script", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MovieDto> updateMovieScript(
+            @PathVariable Long id,
+            @RequestParam("script") MultipartFile script
+    ) {
+        MovieDto updatedMovie = movieService.updateMovieScript(id, script);
+        return ResponseEntity.ok(updatedMovie);
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getMovieImage(@PathVariable Long id) {
+        MovieDto movie = movieService.getMovieById(id);
+        byte[] imageData = movie.getImage();
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageData);
+    }
+
+    @GetMapping("/{id}/script")
+    public ResponseEntity<byte[]> getMovieScript(@PathVariable Long id) {
+        MovieDto movie = movieService.getMovieById(id);
+        byte[] scriptData = movie.getScript();
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(scriptData);
+    }
 
 }

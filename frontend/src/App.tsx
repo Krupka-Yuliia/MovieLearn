@@ -13,6 +13,7 @@ import NewMovieForm from "./Components/MoviesPages/NewMovieForm.tsx";
 import MovieDetails from "./Components/MoviesPages/MovieDetails.tsx";
 import NewGenreForm from "./Components/MoviesPages/NewGenreForm.tsx";
 import NewInterestsForm from "./Components/Interests/NewInterestsForm.tsx";
+import UpdateMovieForm from "./Components/MoviesPages/UpdateMovieForm.tsx";
 
 function PrivateRoute({children, requiredRole}: { children: JSX.Element, requiredRole?: string }) {
     const {user, loading} = useAuth();
@@ -81,6 +82,11 @@ function App() {
                 <Route path="/movies/:id" element={
                     <PrivateRoute>
                         <MovieDetails/>
+                    </PrivateRoute>
+                }/>
+                <Route path="/movies/edit/:id" element={
+                    <PrivateRoute requiredRole="ADMIN">
+                        <UpdateMovieForm/>
                     </PrivateRoute>
                 }/>
                 <Route path="/genres/new" element={
