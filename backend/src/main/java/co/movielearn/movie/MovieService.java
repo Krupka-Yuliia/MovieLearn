@@ -152,4 +152,15 @@ public class MovieService {
     public void deleteMovie(Long id) {
         movieRepository.deleteById(id);
     }
+
+    public List<MovieDto> getMoviesByTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Search title cannot be empty");
+        }
+
+        return movieRepository.findByTitleContainingIgnoreCase(title.trim())
+                .stream()
+                .map(movieMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

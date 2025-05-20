@@ -118,4 +118,16 @@ public class MovieRestController {
                 .body(scriptData);
     }
 
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieDto>> searchMoviesByTitle(
+            @RequestParam String title) {
+
+        if (title == null || title.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(movieService.getMoviesByTitle(title));
+
+    }
 }
